@@ -68,6 +68,16 @@ export const RequisitionsView: React.FC<RequisitionsViewProps> = ({
   const [formError, setFormError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
+  // Sync initial department and material selection when props load
+  React.useEffect(() => {
+    if (!setorId && departments.length > 0) {
+      setSetorId(departments[0].id);
+    }
+    if (formItens.length === 1 && !formItens[0].material_id && materials.length > 0) {
+      setFormItens([{ material_id: materials[0].id, quantidade_solicitada: 1, observacao: '' }]);
+    }
+  }, [departments, materials]);
+
   const handleAddItem = () => {
     setFormItens([...formItens, { material_id: materials[0]?.id || '', quantidade_solicitada: 1, observacao: '' }]);
   };

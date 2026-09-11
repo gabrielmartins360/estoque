@@ -243,14 +243,47 @@ export default function App() {
       {/* Navigation Header */}
       <Navbar
         activeTab={activeTab}
-        onTabChange={(tab) => {
-          setActiveTab(tab);
+        currentTab={activeTab}
+        onTabChange={(tab: any) => {
+          const tabMap: Record<string, NavigationTab> = {
+            dashboard: 'dashboard',
+            materials: 'materials',
+            materiais: 'materials',
+            movements: 'movements',
+            movimentacoes: 'movements',
+            requisitions: 'requisitions',
+            requisicoes: 'requisitions',
+            departments: 'departments',
+            setores: 'departments',
+            'best-practices': 'best-practices',
+            'boas-praticas': 'best-practices',
+          };
+          const resolved = tabMap[tab] || (tab as NavigationTab);
+          setActiveTab(resolved);
           window.scrollTo({ top: 0, behavior: 'smooth' });
+        }}
+        user={{
+          id: 'usr-1',
+          nome: 'Gabriel Henrique',
+          email: 'gabrielhenrique.ia10@gmail.com',
+          cargo: 'Responsável Técnico & Almoxarife Chefe',
+          perfil: 'admin',
+        }}
+        onLogout={() => {
+          showToast('Sessão ativa de Gabriel Henrique mantida para uso operacional.', 'info');
         }}
         onOpenEntrada={() => triggerEntrada()}
         onOpenSaida={() => triggerSaida()}
         onOpenNovaRequisicao={triggerRequisicao}
+        onOpenRequisicao={triggerRequisicao}
         onOpenSqlModal={() => setIsSqlModalOpen(true)}
+        onOpenDatabaseSql={() => setIsSqlModalOpen(true)}
+        onResetDemo={handleResetDatabase}
+        criticalCount={
+          dashboardData?.kpis?.itens_em_falta ??
+          materials.filter((m) => m.quantidade_atual <= m.estoque_minimo).length
+        }
+        pendingReqCount={requisitions.filter((r) => r.status === 'Pendente').length}
       />
 
       {/* Main App Body */}
@@ -286,14 +319,39 @@ export default function App() {
         {/* Content Views based on activeTab */}
         {!isLoading && (
           <>
-            {activeTab === 'dashboard' && dashboardData && (
-              <DashboardView
-                data={dashboardData}
-                onNavigateTab={(tab) => setActiveTab(tab)}
-                onQuickEntrada={triggerEntrada}
-                onQuickSaida={triggerSaida}
-                onQuickRequisicao={triggerRequisicao}
-              />
+            {activeTab === 'dashboard' && (
+              dashboardData ? (
+                <DashboardView
+                  data={dashboardData}
+                  onNavigateTab={(tab) => {
+                    const tabMap: Record<string, NavigationTab> = {
+                      materials: 'materials',
+                      materiais: 'materials',
+                      movements: 'movements',
+                      movimentacoes: 'movements',
+                      requisitions: 'requisitions',
+                      requisicoes: 'requisitions',
+                      departments: 'departments',
+                      setores: 'departments',
+                    };
+                    setActiveTab(tabMap[tab] || 'materials');
+                  }}
+                  onQuickEntrada={triggerEntrada}
+                  onQuickSaida={triggerSaida}
+                  onQuickRequisicao={triggerRequisicao}
+                />
+              ) : (
+                <div className="bg-white rounded-xl p-8 text-center border border-slate-200 shadow-sm">
+                  <p className="text-slate-700 font-semibold mb-2">Painel de Indicadores</p>
+                  <p className="text-slate-500 text-xs mb-4">Aguardando consolidação dos dados analíticos...</p>
+                  <button
+                    onClick={() => loadData()}
+                    className="px-4 py-2 bg-[#0a3d62] hover:bg-[#0e4875] text-white rounded-lg text-xs font-bold transition-all cursor-pointer"
+                  >
+                    Carregar Indicadores
+                  </button>
+                </div>
+              )
             )}
 
             {activeTab === 'materials' && (

@@ -53,7 +53,22 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   onQuickSaida,
   onQuickRequisicao,
 }) => {
-  const { kpis, charts, critical_items, slow_moving_items } = data;
+  const kpis = data?.kpis || {
+    valor_total_estoque: 0,
+    total_materiais: 0,
+    itens_em_falta: 0,
+    itens_abaixo_minimo: 0,
+    itens_acima_maximo: 0,
+    itens_movimento_lento: 0,
+  };
+  const charts = data?.charts || {
+    tendencia_movimentacao: [],
+    distribuicao_categoria: [],
+    top_consumidos: [],
+    consumo_por_setor: [],
+  };
+  const critical_items = data?.critical_items || [];
+  const slow_moving_items = data?.slow_moving_items || [];
 
   return (
     <div className="space-y-6">
@@ -111,7 +126,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </div>
           <div className="mt-3">
             <div className="text-2xl sm:text-3xl font-black font-mono text-[#0a3d62]">
-              R$ {kpis.valor_total_estoque.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              R$ {(kpis.valor_total_estoque || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </div>
             <p className="text-[11px] text-slate-500 mt-1">
               Distribuído em <strong>{kpis.total_materiais}</strong> códigos de materiais

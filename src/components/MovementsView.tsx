@@ -84,6 +84,20 @@ export const MovementsView: React.FC<MovementsViewProps> = ({
     }
   }, [presetMaterial]);
 
+  // Sync initial selection when materials or departments load
+  React.useEffect(() => {
+    if (!inMaterialId && materials.length > 0) {
+      setInMaterialId(materials[0].id);
+      setInCusto(materials[0].custo_unitario);
+    }
+    if (!outMaterialId && materials.length > 0) {
+      setOutMaterialId(materials[0].id);
+    }
+    if (!outSetorId && departments.length > 0) {
+      setOutSetorId(departments[0].id);
+    }
+  }, [materials, departments]);
+
   // When selected material changes in Entrada, update cost
   const handleInMaterialChange = (matId: string) => {
     setInMaterialId(matId);

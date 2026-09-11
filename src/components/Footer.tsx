@@ -2,10 +2,16 @@ import React from 'react';
 import { ShieldCheck, Database, Server, UserCheck, Terminal } from 'lucide-react';
 
 interface FooterProps {
-  onOpenDatabaseSql: () => void;
+  onOpenDatabaseSql?: () => void;
+  onOpenSqlModal?: () => void;
+  onResetDatabase?: () => void;
 }
 
-export const Footer: React.FC<FooterProps> = ({ onOpenDatabaseSql }) => {
+export const Footer: React.FC<FooterProps> = ({ onOpenDatabaseSql, onOpenSqlModal, onResetDatabase }) => {
+  const handleOpenSql = () => {
+    if (onOpenDatabaseSql) onOpenDatabaseSql();
+    else if (onOpenSqlModal) onOpenSqlModal();
+  };
   return (
     <footer className="no-print bg-[#082b45] text-blue-200 border-t border-[#1e5a96]/40 mt-auto py-8 text-xs">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -47,12 +53,21 @@ export const Footer: React.FC<FooterProps> = ({ onOpenDatabaseSql }) => {
           {/* Actions and Documentation */}
           <div className="flex flex-col sm:flex-row md:flex-col lg:flex-row items-start md:items-end justify-end gap-2.5">
             <button
-              onClick={onOpenDatabaseSql}
+              onClick={handleOpenSql}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#1e5a96]/40 hover:bg-[#1e5a96] text-amber-300 hover:text-white border border-blue-400/30 transition-colors text-xs font-semibold cursor-pointer"
             >
               <Terminal className="w-3.5 h-3.5 text-[#f4d03f]" />
               <span>Ver Esquema SQL (schema.sql)</span>
             </button>
+            {onResetDatabase && (
+              <button
+                onClick={onResetDatabase}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition-colors text-xs font-semibold cursor-pointer"
+                title="Restaurar dados iniciais"
+              >
+                Restaurar Dados Padrão
+              </button>
+            )}
             <div className="text-right text-[11px] text-blue-300/60">
               Versão 2.4.0 • Produção
             </div>

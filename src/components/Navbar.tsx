@@ -18,32 +18,59 @@ import {
 import { Usuario } from '../types';
 
 interface NavbarProps {
-  currentTab: string;
-  onTabChange: (tab: string) => void;
-  user: Usuario | null;
-  onLogout: () => void;
+  currentTab?: string;
+  activeTab?: string;
+  onTabChange: (tab: any) => void;
+  user?: Usuario | null;
+  onLogout?: () => void;
   onOpenEntrada: () => void;
   onOpenSaida: () => void;
-  onOpenRequisicao: () => void;
-  onOpenDatabaseSql: () => void;
-  onResetDemo: () => void;
-  criticalCount: number;
-  pendingReqCount: number;
+  onOpenRequisicao?: () => void;
+  onOpenNovaRequisicao?: () => void;
+  onOpenDatabaseSql?: () => void;
+  onOpenSqlModal?: () => void;
+  onResetDemo?: () => void;
+  criticalCount?: number;
+  pendingReqCount?: number;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
   currentTab,
+  activeTab,
   onTabChange,
   user,
   onLogout,
   onOpenEntrada,
   onOpenSaida,
   onOpenRequisicao,
+  onOpenNovaRequisicao,
   onOpenDatabaseSql,
+  onOpenSqlModal,
   onResetDemo,
-  criticalCount,
-  pendingReqCount,
+  criticalCount = 0,
+  pendingReqCount = 0,
 }) => {
+  const selectedTab = currentTab || activeTab || 'dashboard';
+
+  const handleOpenReq = () => {
+    if (onOpenNovaRequisicao) onOpenNovaRequisicao();
+    else if (onOpenRequisicao) onOpenRequisicao();
+  };
+
+  const handleOpenSql = () => {
+    if (onOpenSqlModal) onOpenSqlModal();
+    else if (onOpenDatabaseSql) onOpenDatabaseSql();
+  };
+
+  const isTabActive = (tabKey: string) => {
+    if (tabKey === 'dashboard') return selectedTab === 'dashboard';
+    if (tabKey === 'materials') return selectedTab === 'materials' || selectedTab === 'materiais';
+    if (tabKey === 'movements') return selectedTab === 'movements' || selectedTab === 'movimentacoes';
+    if (tabKey === 'requisitions') return selectedTab === 'requisitions' || selectedTab === 'requisicoes';
+    if (tabKey === 'departments') return selectedTab === 'departments' || selectedTab === 'setores';
+    if (tabKey === 'best-practices') return selectedTab === 'best-practices' || selectedTab === 'boas-praticas';
+    return selectedTab === tabKey;
+  };
   return (
     <header className="no-print bg-[#0a3d62] text-white border-b border-[#1e5a96]/40 sticky top-0 z-40 shadow-md">
       {/* Top Utility Bar */}
@@ -90,7 +117,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
 
             <button
-              onClick={onOpenRequisicao}
+              onClick={handleOpenReq}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#1e5a96] hover:bg-[#256fb8] text-white text-xs font-semibold shadow-sm transition-all active:scale-95 border border-blue-400/30 cursor-pointer"
               title="Criar nova requisição de materiais"
             >
@@ -112,21 +139,25 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </div>
               </div>
 
-              <button
-                onClick={onResetDemo}
-                title="Restaurar dados de teste padrão"
-                className="p-1.5 rounded-lg text-blue-200 hover:text-white hover:bg-blue-800/60 transition-colors cursor-pointer"
-              >
-                <RotateCcw className="w-4 h-4" />
-              </button>
+              {onResetDemo && (
+                <button
+                  onClick={onResetDemo}
+                  title="Restaurar dados de teste padrão"
+                  className="p-1.5 rounded-lg text-blue-200 hover:text-white hover:bg-blue-800/60 transition-colors cursor-pointer"
+                >
+                  <RotateCcw className="w-4 h-4" />
+                </button>
+              )}
 
-              <button
-                onClick={onLogout}
-                title="Sair do sistema"
-                className="p-1.5 rounded-lg text-blue-200 hover:text-rose-300 hover:bg-rose-900/30 transition-colors cursor-pointer"
-              >
-                <LogOut className="w-4 h-4" />
-              </button>
+              {onLogout && (
+                <button
+                  onClick={onLogout}
+                  title="Sessão ativa de Gabriel Henrique"
+                  className="p-1.5 rounded-lg text-blue-200 hover:text-rose-300 hover:bg-rose-900/30 transition-colors cursor-pointer"
+                >
+                  <LogOut className="w-4 h-4" />
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -139,7 +170,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               onClick={() => onTabChange('dashboard')}
               className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all whitespace-nowrap cursor-pointer ${
-                currentTab === 'dashboard'
+                isTabActive('dashboard')
                   ? 'bg-[#1e5a96] text-white shadow-sm border border-blue-400/40 text-amber-300'
                   : 'text-blue-200/90 hover:text-white hover:bg-white/5'
               }`}
@@ -149,9 +180,9 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
 
             <button
-              onClick={() => onTabChange('materiais')}
+              onClick={() => onTabChange('materials')}
               className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all whitespace-nowrap cursor-pointer relative ${
-                currentTab === 'materiais'
+                isTabActive('materials')
                   ? 'bg-[#1e5a96] text-white shadow-sm border border-blue-400/40'
                   : 'text-blue-200/90 hover:text-white hover:bg-white/5'
               }`}
@@ -166,9 +197,9 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
 
             <button
-              onClick={() => onTabChange('movimentacoes')}
+              onClick={() => onTabChange('movements')}
               className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all whitespace-nowrap cursor-pointer ${
-                currentTab === 'movimentacoes'
+                isTabActive('movements')
                   ? 'bg-[#1e5a96] text-white shadow-sm border border-blue-400/40'
                   : 'text-blue-200/90 hover:text-white hover:bg-white/5'
               }`}
@@ -178,9 +209,9 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
 
             <button
-              onClick={() => onTabChange('requisicoes')}
+              onClick={() => onTabChange('requisitions')}
               className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all whitespace-nowrap cursor-pointer ${
-                currentTab === 'requisicoes'
+                isTabActive('requisitions')
                   ? 'bg-[#1e5a96] text-white shadow-sm border border-blue-400/40'
                   : 'text-blue-200/90 hover:text-white hover:bg-white/5'
               }`}
@@ -195,9 +226,9 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
 
             <button
-              onClick={() => onTabChange('setores')}
+              onClick={() => onTabChange('departments')}
               className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all whitespace-nowrap cursor-pointer ${
-                currentTab === 'setores'
+                isTabActive('departments')
                   ? 'bg-[#1e5a96] text-white shadow-sm border border-blue-400/40'
                   : 'text-blue-200/90 hover:text-white hover:bg-white/5'
               }`}
@@ -207,9 +238,9 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
 
             <button
-              onClick={() => onTabChange('boas-praticas')}
+              onClick={() => onTabChange('best-practices')}
               className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all whitespace-nowrap cursor-pointer ${
-                currentTab === 'boas-praticas'
+                isTabActive('best-practices')
                   ? 'bg-[#1e5a96] text-white shadow-sm border border-blue-400/40'
                   : 'text-blue-200/90 hover:text-white hover:bg-white/5'
               }`}
@@ -219,7 +250,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
 
             <button
-              onClick={onOpenDatabaseSql}
+              onClick={handleOpenSql}
               className="flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold text-blue-200/90 hover:text-white hover:bg-white/5 transition-all whitespace-nowrap cursor-pointer ml-auto border border-blue-400/20"
             >
               <Database className="w-4 h-4 text-cyan-300" />
